@@ -1,6 +1,6 @@
-# Example CRM Integration
+# Client Success CRM Integration
 
-This project aims to illustrate the functionality required for a custom CRM to integrate with SocialSignIn.
+This project aims to illustrate the functionality required for a custom Client Success CRM to integrate with SocialSignIn.
 
 ## Sample Integration Installation
 
@@ -20,7 +20,11 @@ The SHARED\_SECRET environment variable is used to verify that SocialSignIn made
 
 The signing works by adding a sha256 hash\_hmac query parameter on all requests (see: http://php.net/hash_hmac )
 
-You can choose to ignore this parameter if you so wish.
+The CS\_USERNAME environment variable is used to authenticate with client success.
+
+The CS\_PASSWORD environment variable is used to authenticate with client success.
+
+You can choose to ignore these parameters if you so wish.
 
 ## Required HTTP Interface
 
