@@ -12,8 +12,12 @@ final class UserRepository implements RepositoryInterface
     
     private $password = "";
     
-    public function __construct()
+    public function __construct($username, $password)
     {
+      
+        $this->username = $username;
+        $this->password = $password;
+        
         $ch = curl_init();
 
         curl_setopt($ch, CURLOPT_URL, $this->api."/auth");
