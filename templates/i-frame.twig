@@ -1,0 +1,110 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+    <!-- Optional theme -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css" integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp" crossorigin="anonymous">
+    <!-- Latest compiled and minified JavaScript -->
+    <script
+  src="https://code.jquery.com/jquery-3.2.1.min.js"
+  integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="
+  crossorigin="anonymous"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+    <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet" integrity="sha384-wvfXpqpZZVQGK6TAh5PVlGOfQNHSoD2xbE+QkPxCAFlNEevoEH3Sl0sibVcOQVnN" crossorigin="anonymous">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+</head>
+<body>
+  <div class="container-fluid">
+    <h3>{{ person.firstName }} {{ person.lastName }}<br/><small><i>{{ person.title }}</i></small></h3>
+
+    {% if person.phone %}
+    <h5><i class="fa fa-phone" aria-hidden="true"></i> {{ person.phone }}</h5>
+    {% endif %}
+    {% if person.mobile %}
+    <h5><i class="fa fa-mobile" aria-hidden="true"></i> {{ person.mobile }}</h5>
+    {% endif %}
+
+
+    <hr/>
+
+    <a href="https://app.clientsuccess.com/cs/success/{{person.client.id}}">
+      <h3>{{ person.client.name }} <small>({{person.client.clientSegment}})</small></h3>
+    </a>
+
+    <ul class="list-group">
+      <li class="list-group-item">
+        <i class="fa fa-clock-o" aria-hidden="true"></i>  
+        Start Date <span class="badge">{{ person.client.inceptionDate}}</span>
+      </li>
+      <li class="list-group-item">
+        <i class="fa fa-flag" aria-hidden="true"></i> 
+        Status <span class="badge">{{person.client.active}}</span>
+      </li>
+      <li class="list-group-item">
+        <i class="fa fa-star" aria-hidden="true"></i> 
+        Success Score <span class="badge">{{ person.client.successScore}}</span>
+      </li>
+      {% for field in person.client.customFieldValues %}
+      <li class="list-group-item">{{ field.label }} <span class="badge">{{ field.value }}</span></li>
+      {% endfor %}
+    </ul>
+
+    <h4>Subscriptions</h4>
+    <hr/>
+    <table class="table">
+      <thead>
+        <td>Start date</td>
+        <td>Amount</td>
+        <td>Probability</td>
+        <td>End Date</td>
+      </thead>
+      <tr>
+        {% for subscription in person.subscriptions %}
+        <tr>
+          <td>{{ subscription.startDate }}</td>
+          <td>£{{ subscription.amount }}</td>
+          <td>{{ subscription.potentialProbability }}</td>
+          <td>{{ subscription.potentialEndDate }}</td>
+        </tr>
+        {% endfor %}
+    </table>
+
+    <h4>Todos</h4>
+    <hr/>
+    <ul class="list-group">
+    {% for todo in person.todos %}
+      <li class="list-group-item">
+        {% if todo.completed %}  
+          <i class="fa fa-check-square-o" aria-hidden="true"></i> 
+        {%else %}
+          <i class="fa fa-square-o" aria-hidden="true"></i> 
+        {% endif %}
+        {{ todo.name | raw }} </li>
+    {% endfor %}
+    </ul>
+    
+    <h4>Previous Interactions</h4>
+    <hr/>
+    <div class="panel-group" id="accordion" role="tablist" aria-multiselectable="true">
+      {% for interaction in person.interactions %}
+      <div class="panel panel-default">
+        <div class="panel-heading" role="tab">
+          <h4 class="panel-title">
+            <a role="button" href="#collapse{{loop.index}}" data-toggle="collapse" >
+              <i class="fa fa-sticky-note" aria-hidden="true"></i> {{ interaction.subject }}
+            </a>
+          </h4>
+        </div>
+        <div id="collapse{{loop.index}}" class="panel-collapse collapse" >
+          <div class="panel-body">
+            {{interaction.createdDateTime}} - {{ interaction.from.name }} -> {{ interaction.to.name }}
+            <pre>{{ interaction.note | raw }}</pre>
+          </div>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+</body>
+</html>
