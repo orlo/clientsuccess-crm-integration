@@ -28,7 +28,7 @@ $container['shared_secret'] = function () {
 
 $container['cs_username'] = function () {
     $username = getenv('CS_USERNAME');
-    if (empty($secret)) {
+    if (empty($username)) {
         throw new \InvalidArgumentException("CS_USERNAME not defined in environment. Cannot continue.");
     }
     Assertion::notEmpty($username);
@@ -44,8 +44,8 @@ $container['cs_password'] = function () {
     return $password;
 };
 
-$container['person_repository'] = function () {
-    return new UserRepository($container['cs_username'], $container['cs_passsword']);
+$container['person_repository'] = function (ContainerInterface $c) {
+    return new UserRepository($c->get('cs_username'), $c->get('cs_passsword'));
 };
 
 $container['twig'] = function () {

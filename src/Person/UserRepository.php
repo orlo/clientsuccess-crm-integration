@@ -14,7 +14,6 @@ final class UserRepository implements RepositoryInterface
     
     public function __construct($username, $password)
     {
-      
         $this->username = $username;
         $this->password = $password;
         
