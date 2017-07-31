@@ -45,7 +45,7 @@ $container['cs_password'] = function () {
 };
 
 $container['person_repository'] = function (ContainerInterface $c) {
-    return new UserRepository($c->get('cs_username'), $c->get('cs_passsword'));
+    return new UserRepository($c->get('cs_username'), $c->get('cs_password'));
 };
 
 $container['twig'] = function () {
