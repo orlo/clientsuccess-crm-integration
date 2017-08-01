@@ -4,6 +4,7 @@ use Assert\Assertion;
 use Psr\Container\ContainerInterface;
 use Slim\App;
 use SocialSignIn\ExampleCrmIntegration\Controller\IFrameController;
+use SocialSignIn\ExampleCrmIntegration\Controller\InteractionController;
 use SocialSignIn\ExampleCrmIntegration\Controller\SearchController;
 use SocialSignIn\ExampleCrmIntegration\Person\UserRepository;
 
@@ -59,4 +60,8 @@ $container['search_controller'] = function (ContainerInterface $c) {
 
 $container['i_frame_controller'] = function (ContainerInterface $c) {
     return new IFrameController($c->get('twig'), $c->get('person_repository'));
+};
+
+$container['interaction_controller'] = function (ContainerInterface $c) {
+    return new InteractionController($c->get('person_repository'));
 };

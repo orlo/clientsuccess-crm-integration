@@ -15,96 +15,153 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
 </head>
 <body>
+  <br/>
   <div class="container-fluid">
-    <h3>{{ person.firstName }} {{ person.lastName }}<br/><small><i>{{ person.title }}</i></small></h3>
-
-    {% if person.phone %}
-    <h5><i class="fa fa-phone" aria-hidden="true"></i> {{ person.phone }}</h5>
-    {% endif %}
-    {% if person.mobile %}
-    <h5><i class="fa fa-mobile" aria-hidden="true"></i> {{ person.mobile }}</h5>
-    {% endif %}
-
-
-    <hr/>
-
-    <a href="https://app.clientsuccess.com/cs/success/{{person.client.id}}">
-      <h3>{{ person.client.name }} <small>({{person.client.clientSegment}})</small></h3>
-    </a>
-
-    <ul class="list-group">
-      <li class="list-group-item">
-        <i class="fa fa-clock-o" aria-hidden="true"></i>  
-        Start Date <span class="badge">{{ person.client.inceptionDate}}</span>
-      </li>
-      <li class="list-group-item">
-        <i class="fa fa-flag" aria-hidden="true"></i> 
-        Status <span class="badge">{{person.client.active}}</span>
-      </li>
-      <li class="list-group-item">
-        <i class="fa fa-star" aria-hidden="true"></i> 
-        Success Score <span class="badge">{{ person.client.successScore}}</span>
-      </li>
-      {% for field in person.client.customFieldValues %}
-      <li class="list-group-item">{{ field.label }} <span class="badge">{{ field.value }}</span></li>
-      {% endfor %}
-    </ul>
-
-    <h4>Subscriptions</h4>
-    <hr/>
-    <table class="table">
-      <thead>
-        <td>Start date</td>
-        <td>Amount</td>
-        <td>Probability</td>
-        <td>End Date</td>
-      </thead>
-      <tr>
-        {% for subscription in person.subscriptions %}
-        <tr>
-          <td>{{ subscription.startDate }}</td>
-          <td>£{{ subscription.amount }}</td>
-          <td>{{ subscription.potentialProbability }}</td>
-          <td>{{ subscription.potentialEndDate }}</td>
-        </tr>
-        {% endfor %}
-    </table>
-
-    <h4>Todos</h4>
-    <hr/>
-    <ul class="list-group">
-    {% for todo in person.todos %}
-      <li class="list-group-item">
-        {% if todo.completed %}  
-          <i class="fa fa-check-square-o" aria-hidden="true"></i> 
-        {%else %}
-          <i class="fa fa-square-o" aria-hidden="true"></i> 
-        {% endif %}
-        {{ todo.name | raw }} </li>
-    {% endfor %}
-    </ul>
-    
-    <h4>Previous Interactions</h4>
-    <hr/>
-    <div class="panel-group" id="accordion" role="tablist" aria-multiselectable="true">
-      {% for interaction in person.interactions %}
-      <div class="panel panel-default">
-        <div class="panel-heading" role="tab">
-          <h4 class="panel-title">
-            <a role="button" href="#collapse{{loop.index}}" data-toggle="collapse" >
-              <i class="fa fa-sticky-note" aria-hidden="true"></i> {{ interaction.subject }}
-            </a>
-          </h4>
+    <div class="row">
+      <div class="col-sm-7 hidden-xs">
+        <h3>
+          Previous Interactions 
+          <a href="#" onclick="return false;"><i class="fa fa-plus-square pull-right" aria-hidden="true" id="newNote"></i></a>
+        </h3>
+        <hr/>
+        
+        <div id="newInteraction" style="display: none;">
+          <h3>New Interaction</h3>
+          <form class="form-horizontal">
+            <div class="form-group">
+              <div class="col-sm-12">
+                <textarea class="form-control" rows="3" id="newNoteText"></textarea>
+              </div>
+            </div>
+            <div class="form-group">
+              <div class="col-sm-offset-2 col-sm-10">
+                <button type="submit" onclick="return false;" id="saveNote" class="btn btn-default pull-right">Save Note</button>
+              </div>
+            </div>
+          </form>
         </div>
-        <div id="collapse{{loop.index}}" class="panel-collapse collapse" >
-          <div class="panel-body">
-            {{interaction.createdDateTime}} - {{ interaction.from.name }} -> {{ interaction.to.name }}
-            <pre>{{ interaction.note | raw }}</pre>
-          </div>
+        
+        <div class="list-group" id="interactions">
+          {% for interaction in person.interactions %}
+          <a href="#collapse{{loop.index}}" data-toggle="collapse" data-parent="#interactions" class="list-group-item">
+            <h4 class="list-group-item-heading">{{ interaction.subject [:30] ~ '...' }}</h4>
+            <p class="list-group-item-text">{% if interaction.from.name %}{{ interaction.from.name }} @ {% endif %}{{interaction.createdDateTime | date("Y/m/d")}}</p>
+            <div id="collapse{{loop.index}}" class="panel-collapse collapse" >
+              <div class="panel-body">
+                <pre>{{ interaction.note | raw }}</pre>
+              </div>
+            </div>
+          </a>
+          {% endfor %}
         </div>
       </div>
-      {% endfor %}
+      <div class="col-sm-5 col-xs-12">
+        <div class="media">
+          <div class="media-left">
+            <a href="#">
+              <i class="fa fa-3x fa-user"></i>
+            </a>
+          </div>
+          <div class="media-body">
+            <h4 class="media-heading">{{ person.firstName }} {{ person.lastName }}</h4>
+            {{ person.title }}
+          </div>
+        </div>
+        <hr/>
+        
+        <ul class="list-group">
+          {% if person.phone %}
+          <li class="list-group-item">
+            <i class="fa fa-phone" aria-hidden="true"></i>  
+            Phone <span class="badge">{{ person.phone }}</span>
+          </li>
+          {% endif %}
+          {% if person.mobile %}
+          <li class="list-group-item">
+            <i class="fa fa-mobile" aria-hidden="true"></i>  
+            Mobile <span class="badge"> {{ person.mobile }}</span>
+          </li>
+          {% endif %}
+          <li class="list-group-item">
+            <i class="fa fa-clock-o" aria-hidden="true"></i>  
+            Start Date <span class="badge">{{ person.client.inceptionDate}}</span>
+          </li>
+          <li class="list-group-item">
+            <i class="fa fa-flag" aria-hidden="true"></i> 
+            Status <span class="badge">{{person.client.active}}</span>
+          </li>
+          <li class="list-group-item">
+            <i class="fa fa-star" aria-hidden="true"></i> 
+            Success Score <span class="badge">{{ person.client.successScore}}</span>
+          </li>
+        </ul>
+
+
+
+        <hr/>
+
+        <a href="https://app.clientsuccess.com/cs/success/{{person.client.id}}">
+          <h3><i class="fa fa-external-link" aria-hidden="true"></i> {{ person.client.name }} <small>({{person.client.clientSegment}})</small></h3>
+        </a>
+
+        <ul class="list-group">
+          {% for field in person.client.customFieldValues %}
+          <li class="list-group-item">{{ field.label }} <span class="badge">{{ field.value }}</span></li>
+          {% endfor %}
+        </ul>
+
+        <h4>Subscriptions</h4>
+        <hr/>
+        <table class="table">
+          <thead>
+            <td>Start date</td>
+            <td>Amount</td>
+            <td>Probability</td>
+            <td>End Date</td>
+          </thead>
+          <tr>
+            {% for subscription in person.subscriptions %}
+            <tr>
+              <td>{{ subscription.startDate }}</td>
+              <td>£{{ subscription.amount }}</td>
+              <td>{{ subscription.potentialProbability }}</td>
+              <td>{{ subscription.potentialEndDate }}</td>
+            </tr>
+            {% endfor %}
+        </table>
+
+        <h4>Todos</h4>
+        <hr/>
+        <ul class="list-group">
+        {% for todo in person.todos %}
+          <li class="list-group-item">
+            {% if todo.completed %}  
+              <i class="fa fa-check-square-o" aria-hidden="true"></i> 
+            {%else %}
+              <i class="fa fa-square-o" aria-hidden="true"></i> 
+            {% endif %}
+            {{ todo.name | raw }} </li>
+        {% endfor %}
+        </ul>
+        
+      </div>
     </div>
   </div>
+        
+        
+  <script type="text/javascript">
+    $('#newNote').click(function() {
+      $('#newInteraction').toggle();
+      $('#interactions').toggle();
+    });
+    
+    $('#saveNote').click(function() {
+      $.post( "/interaction", { note: $('#newNoteText').val(), client_id: {{person.client.id}} }, function( data ) {
+        console.log(data);
+        $('#newInteraction').toggle();
+        $('#interactions').toggle();
+      });
+    });
+  </script>
 </body>
 </html>
