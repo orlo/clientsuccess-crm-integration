@@ -16,7 +16,7 @@
 </head>
 <body>
   <br/>
-  <div class="container-fluid">
+  <div class="">
     <div class="row">
       <div class="col-sm-7 hidden-xs">
         <h3>
@@ -84,7 +84,7 @@
           {% endif %}
           <li class="list-group-item">
             <i class="fa fa-clock-o" aria-hidden="true"></i>  
-            Start Date <span class="badge">{{ person.client.inceptionDate}}</span>
+            Start Date <span class="badge">{{ person.client.inceptionDate | date("Y/m/d")}}</span>
           </li>
           <li class="list-group-item">
             <i class="fa fa-flag" aria-hidden="true"></i> 
@@ -109,27 +109,28 @@
           <li class="list-group-item">{{ field.label }} <span class="badge">{{ field.value }}</span></li>
           {% endfor %}
         </ul>
-
+        
         <h4>Subscriptions</h4>
         <hr/>
-        <table class="table">
-          <thead>
-            <td>Start date</td>
-            <td>Amount</td>
-            <td>Probability</td>
-            <td>End Date</td>
-          </thead>
-          <tr>
-            {% for subscription in person.subscriptions %}
+        <div class="table-responsive">
+          <table class="table">
+            <thead>
+              <td>Start date</td>
+              <td>Amount</td>
+              <td>Probability</td>
+              <td>End Date</td>
+            </thead>
             <tr>
-              <td>{{ subscription.startDate }}</td>
-              <td>£{{ subscription.amount }}</td>
-              <td>{{ subscription.potentialProbability }}</td>
-              <td>{{ subscription.potentialEndDate }}</td>
-            </tr>
-            {% endfor %}
-        </table>
-
+              {% for subscription in person.subscriptions %}
+              <tr>
+                <td>{{ subscription.startDate | date("Y/m/d")}}</td>
+                <td>£{{ subscription.amount }}</td>
+                <td>{{ subscription.potentialProbability }}</td>
+                <td>{{ subscription.potentialEndDate | date("Y/m/d")}}</td>
+              </tr>
+              {% endfor %}
+          </table>
+        </div>
         <h4>Todos</h4>
         <hr/>
         <ul class="list-group">
