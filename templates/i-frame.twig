@@ -44,11 +44,11 @@
         <div class="list-group" id="interactions">
           {% for interaction in person.interactions %}
           <a href="#collapse{{loop.index}}" data-toggle="collapse" data-parent="#interactions" class="list-group-item">
-            <h4 class="list-group-item-heading">{{ interaction.subject [:30] ~ '...' }}</h4>
+            <h4 class="list-group-item-heading">{{ interaction.subject |striptags[:30] ~ '...' }}</h4>
             <p class="list-group-item-text">{% if interaction.from.name %}{{ interaction.from.name }} @ {% endif %}{{interaction.createdDateTime | date("Y/m/d")}}</p>
             <div id="collapse{{loop.index}}" class="panel-collapse collapse" >
               <div class="panel-body">
-                <pre>{{ interaction.note | raw }}</pre>
+                <pre>{{ interaction.note | striptags | raw }}</pre>
               </div>
             </div>
           </a>
