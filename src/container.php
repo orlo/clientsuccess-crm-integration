@@ -6,6 +6,7 @@ use Slim\App;
 use SocialSignIn\ExampleCrmIntegration\Controller\IFrameController;
 use SocialSignIn\ExampleCrmIntegration\Controller\InteractionController;
 use SocialSignIn\ExampleCrmIntegration\Controller\SearchController;
+use SocialSignIn\ExampleCrmIntegration\Controller\WebhookController;
 use SocialSignIn\ExampleCrmIntegration\Person\UserRepository;
 
 Assertion::isInstanceOf($app, App::class);
@@ -64,4 +65,8 @@ $container['i_frame_controller'] = function (ContainerInterface $c) {
 
 $container['interaction_controller'] = function (ContainerInterface $c) {
     return new InteractionController($c->get('person_repository'));
+};
+
+$container['webhook_controller'] = function () {
+    return new WebhookController();
 };
