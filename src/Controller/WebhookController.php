@@ -19,18 +19,15 @@ final class WebhookController
             throw new \InvalidArgumentException("Post required.");
         }
         $notification = \SocialSignIn\ExampleCrmIntegration\Model\Notification::createFromHttpRequest($request);
-        $body = "" . $request->getBody();
         
         $shared_secret = getenv('SHARED_SECRET');
-        if (empty($secret)) {
+        if (empty($shared_secret)) {
             throw new \InvalidArgumentException("SHARED_SECRET not defined in environment. Cannot continue.");
         }
         
         if ($notification->isValid($shared_secret)) { // is it really from SocialSignIn ?
           
-            $notification->getPayload();
-            
-            error_log(var_dump($notification->getPayload()), 0);
+            file_put_contents('/tmp/cs_log.txt', json_encode($notification->getPayload()).PHP_EOL , FILE_APPEND | LOCK_EX);
             
             return $response->withJson([
                 'verification-hash' => $notification->generateVerificationHash($shared_secret),
