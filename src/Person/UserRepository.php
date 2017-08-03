@@ -33,42 +33,6 @@ final class UserRepository implements RepositoryInterface
         $this->token = json_decode($response)->access_token;
     }
     
-    private function getAllClients() {
-        $ch = curl_init();
-
-        curl_setopt($ch, CURLOPT_URL, $this->api."/clients");
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
-        curl_setopt($ch, CURLOPT_HEADER, FALSE);
-        curl_setopt($ch, CURLOPT_HTTPHEADER, array(
-          "Content-Type: application/json",
-          "Accept: application/json",
-          "Authorization: ".$this->token
-        ));
-
-        $response = curl_exec($ch);
-        curl_close($ch);
-
-        return json_decode($response);
-    }
-    
-    private function getAllContactsForClient ($clientId) {
-        $ch = curl_init();
-
-        curl_setopt($ch, CURLOPT_URL, $this->api."/clients/".$clientId."/contacts");
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
-        curl_setopt($ch, CURLOPT_HEADER, FALSE);
-        curl_setopt($ch, CURLOPT_HTTPHEADER, array(
-          "Content-Type: application/json",
-          "Accept: application/json",
-          "Authorization: ".$this->token
-        ));
-
-        $response = curl_exec($ch);
-        curl_close($ch);
-
-        return json_decode($response);
-    }
-    
     /**
      * @param string $query
      *
@@ -77,30 +41,25 @@ final class UserRepository implements RepositoryInterface
     public function search($query)
     {
       
+        $ch = curl_init();
+
+        curl_setopt($ch, CURLOPT_URL, $this->api."/contacts/search?term='".$query."'");
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
+        curl_setopt($ch, CURLOPT_HEADER, FALSE);
+        curl_setopt($ch, CURLOPT_HTTPHEADER, array(
+          "Authorization: ".$this->token,
+          "Content-Type: application/json"
+        ));
+
+        $clients = json_decode(curl_exec($ch));
+        curl_close($ch);
+
         $persons = [];
-        foreach ($this->getAllClients() as $client) {
-          $contacts = $this->getAllContactsForClient($client->id);
-          
-          if (count($contacts) === 0) {
-            continue;
-          }
-
-          foreach($contacts as $contact) {
-            $persons[] = new Entity($client->id . ":" . $contact->id, $contact->firstName . " " . $contact->lastName);
-          }
+        foreach ($clients as $contact) {
+          $persons[] = new Entity($contact->clientId . ":" . $contact->id, $contact->firstName . " " . $contact->lastName);
         }
-      
-        $query = preg_quote($query, '!');
-
-        $matched = [];
-
-        foreach ($persons as $person) {
-            if (preg_match('!' . $query . '!i', $person->getName())) {
-                $matched[] = $person;
-            }
-        }
-
-        return $matched;
+        
+        return $persons;
     }
     
     public function addToDo ($id, $name) {
@@ -125,6 +84,28 @@ final class UserRepository implements RepositoryInterface
 
       var_dump($response);
       die();
+    }
+    
+    
+    public function addNote($clientId, $note) {
+      $ch = curl_init();
+
+      curl_setopt($ch, CURLOPT_URL, $this->api."/clients/$clientId/interactions");
+      curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
+      curl_setopt($ch, CURLOPT_HEADER, FALSE);
+      curl_setopt($ch, CURLOPT_POST, TRUE);
+      curl_setopt($ch, CURLOPT_HTTPHEADER, array(
+        "Content-Type: application/json",
+        "Authorization: ".$this->token
+      ));
+      curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode([
+          'createdByEmployeeId' => 1,
+          'interactionTypeId' => 4,
+          'note' => $note
+      ]));
+      $response = curl_exec($ch);
+      curl_close($ch);
+      return json_decode($response);
     }
 
     /**
