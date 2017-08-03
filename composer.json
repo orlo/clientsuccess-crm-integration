@@ -15,7 +15,8 @@
   "require": {
     "slim/slim": "^3.8",
     "twig/twig": "^1.34",
-    "beberlei/assert": "^2.7"
+    "beberlei/assert": "^2.7",
+    "ramsey/uuid": "^3.6.1"
   },
   "require-dev": {
     "phpunit/phpunit": "^4.4.0",
