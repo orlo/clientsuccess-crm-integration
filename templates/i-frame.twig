@@ -95,14 +95,20 @@
             Success Score <span class="badge">{{ person.client.successScore}}</span>
           </li>
         </ul>
-
-
-
+        
+        <div class="media">
+          <div class="media-left">
+            <a href="https://app.clientsuccess.com/cs/success/{{person.client.id}}">
+              <i class="fa fa-3x fa-building-o"></i>
+            </a>
+          </div>
+          <div class="media-body">
+            <h4 class="media-heading">{{ person.client.name }} </h4>
+            {{person.client.clientSegment}}
+          </div>
+        </div>
+        
         <hr/>
-
-        <a href="https://app.clientsuccess.com/cs/success/{{person.client.id}}">
-          <h3><i class="fa fa-external-link" aria-hidden="true"></i> {{ person.client.name }} <small>({{person.client.clientSegment}})</small></h3>
-        </a>
 
         <ul class="list-group">
           {% for field in person.client.customFieldValues %}
@@ -148,7 +154,6 @@
       </div>
     </div>
   </div>
-        
         
   <script type="text/javascript">
     $('#newNote').click(function() {
