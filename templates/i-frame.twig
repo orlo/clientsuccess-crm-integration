@@ -15,8 +15,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
 </head>
 <body>
-  <br/>
-  <div class="">
+  <br>
+  <div class="container">
     <div class="row">
       <div class="col-sm-7 hidden-xs">
         <h3>
@@ -72,27 +72,32 @@
         <ul class="list-group">
           {% if person.phone %}
           <li class="list-group-item">
+            <span class="badge">{{ person.phone }}</span>
             <i class="fa fa-phone" aria-hidden="true"></i>  
-            Phone <span class="badge">{{ person.phone }}</span>
+            Phone
           </li>
           {% endif %}
           {% if person.mobile %}
           <li class="list-group-item">
+            <span class="badge"> {{ person.mobile }}</span>
             <i class="fa fa-mobile" aria-hidden="true"></i>  
-            Mobile <span class="badge"> {{ person.mobile }}</span>
+            Mobile
           </li>
           {% endif %}
           <li class="list-group-item">
+            <span class="badge">{{ person.client.inceptionDate | date("Y/m/d")}}</span>
             <i class="fa fa-clock-o" aria-hidden="true"></i>  
-            Start Date <span class="badge">{{ person.client.inceptionDate | date("Y/m/d")}}</span>
+            Start Date
           </li>
           <li class="list-group-item">
+            <span class="badge">{{person.client.active}}</span>
             <i class="fa fa-flag" aria-hidden="true"></i> 
-            Status <span class="badge">{{person.client.active}}</span>
+            Status
           </li>
           <li class="list-group-item">
+            <span class="badge">{{ person.client.successScore}}</span>
             <i class="fa fa-star" aria-hidden="true"></i> 
-            Success Score <span class="badge">{{ person.client.successScore}}</span>
+            Success Score
           </li>
         </ul>
         
@@ -112,7 +117,7 @@
 
         <ul class="list-group">
           {% for field in person.client.customFieldValues %}
-          <li class="list-group-item">{{ field.label }} <span class="badge">{{ field.value }}</span></li>
+          <li class="list-group-item"><span class="badge">{{ field.value }}</span> {{ field.label }}</li>
           {% endfor %}
         </ul>
         
