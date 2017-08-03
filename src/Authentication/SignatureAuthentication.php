@@ -9,11 +9,6 @@ final class SignatureAuthentication
 {
 
     /**
-     * @var array
-     */
-    private $passthrough;
-
-    /**
      * @var string
      */
     private $sharedSecret;
@@ -23,24 +18,17 @@ final class SignatureAuthentication
      *
      * @throws \Exception
      */
-    public function __construct($sharedSecret, $passthrough = [])
+    public function __construct($sharedSecret)
     {
         if (!is_string($sharedSecret) || empty($sharedSecret)) {
             throw new \Exception('Expected $sharedSecret to be non-empty string.');
         }
 
         $this->sharedSecret = $sharedSecret;
-        $this->passthrough = $passthrough;
-  }
+    }
 
     public function __invoke(Request $request, Response $response, callable $next)
     {
-        foreach ($this->passthrough as $method => $target) {
-          if ($method == $request->getMethod() && $target == $request->getRequestTarget()) {
-            return $next($request, $response);
-          }
-        }
-        
         $query = $request->getQueryParams();
 
         if (!isset($query['sig'])
