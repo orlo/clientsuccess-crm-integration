@@ -30,6 +30,8 @@ final class WebhookController
           
             $notification->getPayload();
             
+            error_log(var_dump($notification->getPayload()), 0);
+            
             return $response->withJson([
                 'verification-hash' => $notification->generateVerificationHash($shared_secret),
             ], 200);
