@@ -54,6 +54,20 @@ final class SignatureAuthentication
 
         $signature = $query['sig'];
         unset($query['sig']);
+        $allowedParams = [
+            'message_social_network_type',
+            'message_social_network_id',
+            'message_author_social_network_id',
+            'message_sentiment',
+            'message_language_code',
+            'message_socialsignin_id',
+            'message_socialsignin_url',
+            'message_author_socialsignin_id',
+            
+        ];
+        foreach($allowedParams as $param) {
+            unset($query[$param]);
+        }
 
         $expected = hash_hmac('sha256', http_build_query($query), $this->sharedSecret);
 
