@@ -12,6 +12,8 @@ final class UserRepository implements RepositoryInterface
     
     private $password = "";
     
+    private $employees = [];
+    
     public function __construct($username, $password)
     {
         $this->username = $username;
@@ -31,6 +33,30 @@ final class UserRepository implements RepositoryInterface
         $response = curl_exec($ch);
         curl_close($ch);
         $this->token = json_decode($response)->access_token;
+        
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_URL, $this->api."/employees");
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
+        curl_setopt($ch, CURLOPT_HEADER, FALSE);
+
+        curl_setopt($ch, CURLOPT_HTTPHEADER, array(
+          "Authorization: ".$this->token,
+          "Content-Type: application/json"
+        ));
+
+        $response = curl_exec($ch);
+        curl_close($ch);
+        $this->employees = json_decode($response);
+    }
+    
+    private function getCurrentEmployee ($email) {
+      foreach ($this->employees as $employee) {
+        if (strtolower($employee->email) == strtolower($email)) {
+          return $employee;
+        }
+      }
+      
+      return $this->employees[0];
     }
     
     /**
@@ -87,7 +113,8 @@ final class UserRepository implements RepositoryInterface
     }
     
     
-    public function addNote($clientId, $note) {
+    public function addNote($clientId, $contactID, $subject, $note) {
+      
       $ch = curl_init();
 
       curl_setopt($ch, CURLOPT_URL, $this->api."/clients/$clientId/interactions");
@@ -98,14 +125,22 @@ final class UserRepository implements RepositoryInterface
         "Content-Type: application/json",
         "Authorization: ".$this->token
       ));
-      curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode([
-          'createdByEmployeeId' => 1,
-          'interactionTypeId' => 4,
+      $params = [
+          'createdByEmployeeId' => $this->getCurrentEmployee("")->id,
+          'interactionTypeId' => 1,
+          'subject' => $subject,
+          'clientId' => $clientId,
+          'contactID' => $contactID,
           'note' => $note
-      ]));
-      $response = curl_exec($ch);
+      ];
+      
+      curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($params));
+      
+      curl_exec($ch);
       curl_close($ch);
-      return json_decode($response);
+      
+      return json_encode(['success' => true]);
+      
     }
 
     /**

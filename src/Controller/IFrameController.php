@@ -21,19 +21,18 @@ final class IFrameController
 
     public function __invoke(Request $request, Response $response)
     {
-        
-        $id = $request->getQueryParam('id', null);
-
-        if (empty($id)) {
+        $requestParams = $request->getParams();
+      
+        if (empty($requestParams['id'])) {
             return $response->withStatus(400);
         }
 
-        $person = $this->repository->get($id);
+        $person = $this->repository->get($requestParams['id']);
         if ($person === null) {
             return $response->withStatus(404);
         }
         
-        $response->write($this->twig->render('i-frame.twig', ['person' => $person]));
+        $response->write($this->twig->render('i-frame.twig', ['person' => $person, 'request' => $requestParams]));
         
         return $response;
     }

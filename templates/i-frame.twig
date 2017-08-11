@@ -39,6 +39,11 @@
           <form class="form-horizontal">
             <div class="form-group">
               <div class="col-sm-12">
+                <input type="text" class="form-control" rows="3" id="newNoteSubject" value="{{request.message_social_network_type}} message with {{request.message_sentiment}} sentiment"/>
+              </div>
+            </div>
+            <div class="form-group">
+              <div class="col-sm-12">
                 <textarea class="form-control" rows="3" id="newNoteText"></textarea>
               </div>
             </div>
@@ -176,7 +181,12 @@
     });
     
     $('#saveNote').click(function() {
-      $.post( "/interaction", { note: $('#newNoteText').val(), client_id: {{person.client.id}} }, function( data ) {
+      $.post( "/interaction", { 
+          note: $('#newNoteText').val() + '<br/><br/><a href="{{request.message_socialsignin_url|raw}}" target="_blank">View Message</a>', 
+          subject: $('#newNoteSubject').val(),
+          person_id: {{person.id}}, 
+          client_id: {{person.client.id}}
+        }, function( data ) {
         console.log(data);
         $('#newInteraction').toggle();
         $('#interactions').toggle();
