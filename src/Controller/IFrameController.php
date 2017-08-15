@@ -12,11 +12,13 @@ final class IFrameController
 
     private $twig;
     private $repository;
+    private $sharedSecret;
 
-    public function __construct(Twig_Environment $twig, RepositoryInterface $repository)
+    public function __construct(Twig_Environment $twig, RepositoryInterface $repository, $sharedSecret)
     {
         $this->twig = $twig;
         $this->repository = $repository;
+        $this->sharedSecret = $sharedSecret;
     }
 
     public function __invoke(Request $request, Response $response)
@@ -32,8 +34,17 @@ final class IFrameController
             return $response->withStatus(404);
         }
         
-        $response->write($this->twig->render('i-frame.twig', ['person' => $person, 'request' => $requestParams]));
+        $query = ['expires' => time() + 600];
+        $query['sig'] = hash_hmac('sha256', http_build_query($query), $this->sharedSecret);
+
+        $response->write($this->twig->render('i-frame.twig', [
+            'person' => $person, 
+            'request' => $requestParams, 
+            'query' => http_build_query($query)
+        ]));
         
         return $response;
     }
+    
+    
 }

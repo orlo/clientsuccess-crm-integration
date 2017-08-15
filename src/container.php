@@ -60,7 +60,11 @@ $container['search_controller'] = function (ContainerInterface $c) {
 };
 
 $container['i_frame_controller'] = function (ContainerInterface $c) {
-    return new IFrameController($c->get('twig'), $c->get('person_repository'));
+    $secret = getenv('SHARED_SECRET');
+    if (empty($secret)) {
+        throw new \InvalidArgumentException("SHARED_SECRET not defined in environment. Cannot continue.");
+    }
+    return new IFrameController($c->get('twig'), $c->get('person_repository'), $secret);
 };
 
 $container['interaction_controller'] = function (ContainerInterface $c) {
