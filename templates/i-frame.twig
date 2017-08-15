@@ -181,7 +181,7 @@
     });
     
     $('#saveNote').click(function() {
-      $.post( "/interaction?{{query}}", { 
+      $.post( "/interaction?{{query|raw}}", { 
           note: $('#newNoteText').val() + '<br/><br/><a href="{{request.message_socialsignin_url|raw}}" target="_blank">View Message</a>', 
           subject: $('#newNoteSubject').val(),
           person_id: {{person.id}}, 
