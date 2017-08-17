@@ -1,10 +1,11 @@
 <?php
 
-namespace SocialSignIn\ExampleCrmIntegration\Controller;
+
+namespace SocialSignIn\ClientSuccessIntegration\Controller;
 
 use Slim\Http\Request;
 use Slim\Http\Response;
-use SocialSignIn\ExampleCrmIntegration\Person\RepositoryInterface;
+use SocialSignIn\ClientSuccessIntegration\Person\RepositoryInterface;
 use Twig_Environment;
 
 final class IFrameController
@@ -24,7 +25,7 @@ final class IFrameController
     public function __invoke(Request $request, Response $response)
     {
         $requestParams = $request->getParams();
-      
+
         if (empty($requestParams['id'])) {
             return $response->withStatus(400);
         }
@@ -33,18 +34,18 @@ final class IFrameController
         if ($person === null) {
             return $response->withStatus(404);
         }
-        
+
         $query = ['expires' => time() + 600];
         $query['sig'] = hash_hmac('sha256', http_build_query($query), $this->sharedSecret);
 
         $response->write($this->twig->render('i-frame.twig', [
-            'person' => $person, 
-            'request' => $requestParams, 
+            'person' => $person,
+            'request' => $requestParams,
             'query' => http_build_query($query)
         ]));
-        
+
         return $response;
     }
-    
-    
+
+
 }

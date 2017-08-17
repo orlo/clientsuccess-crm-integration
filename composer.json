@@ -1,15 +1,15 @@
 {
-  "name": "socialsignin/example-crm-integration",
+  "name": "socialsignin/clientsuccess-crm-integration",
   "minimum-stability": "stable",
   "license": "proprietary",
   "autoload": {
     "psr-4": {
-      "SocialSignIn\\ExampleCrmIntegration\\": "src\\"
+      "SocialSignIn\\ClientSuccessIntegration\\": "src\\"
     }
   },
   "autoload-dev": {
     "psr-4": {
-      "SocialSignIn\\Test\\ExampleCrmIntegration\\": "tests/"
+      "SocialSignIn\\Test\\ClientSuccessIntegration\\": "tests/"
     }
   },
   "require": {

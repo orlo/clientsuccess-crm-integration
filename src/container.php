@@ -3,11 +3,11 @@
 use Assert\Assertion;
 use Psr\Container\ContainerInterface;
 use Slim\App;
-use SocialSignIn\ExampleCrmIntegration\Controller\IFrameController;
-use SocialSignIn\ExampleCrmIntegration\Controller\InteractionController;
-use SocialSignIn\ExampleCrmIntegration\Controller\SearchController;
-use SocialSignIn\ExampleCrmIntegration\Controller\WebhookController;
-use SocialSignIn\ExampleCrmIntegration\Person\UserRepository;
+use SocialSignIn\ClientSuccessIntegration\Controller\IFrameController;
+use SocialSignIn\ClientSuccessIntegration\Controller\InteractionController;
+use SocialSignIn\ClientSuccessIntegration\Controller\SearchController;
+use SocialSignIn\ClientSuccessIntegration\Controller\WebhookController;
+use SocialSignIn\ClientSuccessIntegration\Person\UserRepository;
 
 Assertion::isInstanceOf($app, App::class);
 Assertion::isInstanceOf($container, ContainerInterface::class);
@@ -21,28 +21,19 @@ $container['errorHandler'] = function ($c) {
 
 $container['shared_secret'] = function () {
     $secret = getenv('SHARED_SECRET');
-    if (empty($secret)) {
-        throw new \InvalidArgumentException("SHARED_SECRET not defined in environment. Cannot continue.");
-    }
-    Assertion::notEmpty($secret);
+    Assertion::notEmpty($secret, 'SHARED_SECRET not defined in environment. Cannot continue.');
     return $secret;
 };
 
 $container['cs_username'] = function () {
     $username = getenv('CS_USERNAME');
-    if (empty($username)) {
-        throw new \InvalidArgumentException("CS_USERNAME not defined in environment. Cannot continue.");
-    }
-    Assertion::notEmpty($username);
+    Assertion::notEmpty($username, 'CS_USERNAME not defined in environment. Cannot continue.');
     return $username;
 };
 
 $container['cs_password'] = function () {
     $password = getenv('CS_PASSWORD');
-    if (empty($password)) {
-        throw new \InvalidArgumentException("CS_PASSWORD not defined in environment. Cannot continue.");
-    }
-    Assertion::notEmpty($password);
+    Assertion::notEmpty($password, 'CS_PASSWORD not defined in environment. Cannot continue.');
     return $password;
 };
 
@@ -60,17 +51,13 @@ $container['search_controller'] = function (ContainerInterface $c) {
 };
 
 $container['i_frame_controller'] = function (ContainerInterface $c) {
-    $secret = getenv('SHARED_SECRET');
-    if (empty($secret)) {
-        throw new \InvalidArgumentException("SHARED_SECRET not defined in environment. Cannot continue.");
-    }
-    return new IFrameController($c->get('twig'), $c->get('person_repository'), $secret);
+    return new IFrameController($c->get('twig'), $c->get('person_repository'), $c->get('shared_secret'));
 };
 
 $container['interaction_controller'] = function (ContainerInterface $c) {
     return new InteractionController($c->get('person_repository'));
 };
 
-$container['webhook_controller'] = function () {
-    return new WebhookController();
+$container['webhook_controller'] = function (ContainerInterface $c) {
+    return new WebhookController($c->get('shared_secret'));
 };

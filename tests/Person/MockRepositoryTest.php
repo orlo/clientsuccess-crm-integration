@@ -1,12 +1,12 @@
 <?php
 
-namespace SocialSignIn\Test\ExampleCrmIntegration\Person;
+namespace SocialSignIn\Test\ClientSuccessIntegration\Person;
 
-use SocialSignIn\ExampleCrmIntegration\Person\Entity;
-use SocialSignIn\ExampleCrmIntegration\Person\MockRepository;
+use SocialSignIn\ClientSuccessIntegration\Person\Entity;
+use SocialSignIn\ClientSuccessIntegration\Person\MockRepository;
 
 /**
- * @covers \SocialSignIn\ExampleCrmIntegration\Person\MockRepository
+ * @covers \SocialSignIn\ClientSuccessIntegration\Person\MockRepository
  */
 class MockRepositoryTest extends \PHPUnit_Framework_TestCase
 {

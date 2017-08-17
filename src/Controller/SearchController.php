@@ -1,10 +1,11 @@
 <?php
 
-namespace SocialSignIn\ExampleCrmIntegration\Controller;
+
+namespace SocialSignIn\ClientSuccessIntegration\Controller;
 
 use Slim\Http\Request;
 use Slim\Http\Response;
-use SocialSignIn\ExampleCrmIntegration\Person\RepositoryInterface;
+use SocialSignIn\ClientSuccessIntegration\Person\RepositoryInterface;
 
 final class SearchController
 {

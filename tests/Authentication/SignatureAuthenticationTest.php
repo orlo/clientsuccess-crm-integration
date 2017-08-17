@@ -1,14 +1,14 @@
 <?php
 
-namespace SocialSignIn\Test\ExampleCrmIntegration\Authentication;
+namespace SocialSignIn\Test\ClientSuccessIntegration\Authentication;
 
 use Slim\Http\Environment;
 use Slim\Http\Request;
 use Slim\Http\Response;
-use SocialSignIn\ExampleCrmIntegration\Authentication\SignatureAuthentication;
+use SocialSignIn\ClientSuccessIntegration\Authentication\SignatureAuthentication;
 
 /**
- * @covers \SocialSignIn\ExampleCrmIntegration\Authentication\SignatureAuthentication
+ * @covers \SocialSignIn\ClientSuccessIntegration\Authentication\SignatureAuthentication
  */
 class SignatureAuthenticationTest extends \PHPUnit_Framework_TestCase
 {
@@ -50,7 +50,7 @@ class SignatureAuthenticationTest extends \PHPUnit_Framework_TestCase
     {
         $request = Request::createFromEnvironment(
             Environment::mock([
-                'QUERY_STRING' => $this->sign(['id' => '1234'], 'incorrect-secret')
+                'QUERY_STRING' => $this->sign(['message_sentiment' => '1234'], 'incorrect-secret')
             ])
         );
 
@@ -65,7 +65,7 @@ class SignatureAuthenticationTest extends \PHPUnit_Framework_TestCase
     {
         $request = Request::createFromEnvironment(
             Environment::mock([
-                'QUERY_STRING' => $this->sign(['id' => '1234'], $this->sharedSecret, -3600)
+                'QUERY_STRING' => $this->sign(['message_sentiment' => '1234'], $this->sharedSecret, -3600)
             ])
         );
 
@@ -80,7 +80,7 @@ class SignatureAuthenticationTest extends \PHPUnit_Framework_TestCase
     {
         $request = Request::createFromEnvironment(
             Environment::mock([
-                'QUERY_STRING' => $this->sign(['id' => '1234'], $this->sharedSecret)
+                'QUERY_STRING' => $this->sign(['message_sentiment' => '1234'], $this->sharedSecret)
             ])
         );
 
@@ -94,29 +94,11 @@ class SignatureAuthenticationTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals(200, $response->getStatusCode());
     }
 
-    public function testCallbackThrows()
-    {
-        $request = Request::createFromEnvironment(
-            Environment::mock([
-                'QUERY_STRING' => $this->sign(['id' => '1234'], $this->sharedSecret)
-            ])
-        );
-
-        $cb = function ($request, Response $response) {
-            throw new \Exception('');
-        };
-
-        /** @var Response $response */
-        $response = call_user_func($this->middleware, $request, new Response(), $cb);
-
-        $this->assertEquals(500, $response->getStatusCode());
-    }
 
     private function sign(array $params, $secret, $ttl = 3600)
     {
         $params['expires'] = time() + $ttl;
-        ksort($params);
-        $params['sig'] = hash_hmac('sha256', join(':', $params), $secret);
+        $params['sig'] = hash_hmac('sha256', http_build_query($params), $secret);
         return http_build_query($params);
     }
 }

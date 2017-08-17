@@ -1,17 +1,17 @@
 <?php
 
-namespace SocialSignIn\Test\ExampleCrmIntegration\Controller;
+namespace SocialSignIn\Test\ClientSuccessIntegration\Controller;
 
+use Mockery as m;
 use Slim\Http\Environment;
 use Slim\Http\Request;
 use Slim\Http\Response;
-use SocialSignIn\ExampleCrmIntegration\Controller\SearchController;
-use Mockery as m;
-use SocialSignIn\ExampleCrmIntegration\Person\Entity;
-use SocialSignIn\ExampleCrmIntegration\Person\RepositoryInterface;
+use SocialSignIn\ClientSuccessIntegration\Controller\SearchController;
+use SocialSignIn\ClientSuccessIntegration\Person\Entity;
+use SocialSignIn\ClientSuccessIntegration\Person\RepositoryInterface;
 
 /**
- * @covers \SocialSignIn\ExampleCrmIntegration\Controller\SearchController
+ * @covers \SocialSignIn\ClientSuccessIntegration\Controller\SearchController
  */
 class SearchControllerTest extends \PHPUnit_Framework_TestCase
 {
@@ -37,7 +37,7 @@ class SearchControllerTest extends \PHPUnit_Framework_TestCase
         m::close();
     }
 
-    public function testItCanReturnHtml()
+    public function testBasic()
     {
         $this->repository->shouldReceive('search')
             ->withArgs(['john'])
@@ -57,7 +57,7 @@ class SearchControllerTest extends \PHPUnit_Framework_TestCase
 
         $this->assertEquals(200, $response->getStatusCode());
         $this->assertJsonStringEqualsJsonString(
-            '{"data": [{"id":"1","name":"John"},{"id":"2","name":"Johnny"}]}',
+            '{"results": [{"id":"1","name":"John"},{"id":"2","name":"Johnny"}]}',
             (string)$response->getBody()
         );
     }
@@ -73,8 +73,9 @@ class SearchControllerTest extends \PHPUnit_Framework_TestCase
         $response = new Response();
 
         /** @var Response $response */
-        $response = call_user_func($this->controller, $request, $response);
 
-        $this->assertEquals(400, $response->getStatusCode());
+        // no ?q=xxx
+        $this->setExpectedException(\InvalidArgumentException::class);
+        $response = call_user_func($this->controller, $request, $response);
     }
 }

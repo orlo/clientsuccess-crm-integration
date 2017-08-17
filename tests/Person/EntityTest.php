@@ -1,11 +1,11 @@
 <?php
 
-namespace SocialSignIn\Test\ExampleCrmIntegration\Person;
+namespace SocialSignIn\Test\ClientSuccessIntegration\Person;
 
-use SocialSignIn\ExampleCrmIntegration\Person\Entity;
+use SocialSignIn\ClientSuccessIntegration\Person\Entity;
 
 /**
- * @covers \SocialSignIn\ExampleCrmIntegration\Person\Entity
+ * @covers \SocialSignIn\ClientSuccessIntegration\Person\Entity
  */
 class EntityTest extends \PHPUnit_Framework_TestCase
 {

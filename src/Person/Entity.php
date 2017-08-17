@@ -1,6 +1,6 @@
 <?php
 
-namespace SocialSignIn\ExampleCrmIntegration\Person;
+namespace SocialSignIn\ClientSuccessIntegration\Person;
 
 final class Entity implements \JsonSerializable
 {

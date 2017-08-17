@@ -1,17 +1,17 @@
 <?php
 
-namespace SocialSignIn\Test\ExampleCrmIntegration\Controller;
+namespace SocialSignIn\Test\ClientSuccessIntegration\Controller;
 
+use Mockery as m;
 use Slim\Http\Environment;
 use Slim\Http\Request;
 use Slim\Http\Response;
-use SocialSignIn\ExampleCrmIntegration\Controller\IFrameController;
-use Mockery as m;
-use SocialSignIn\ExampleCrmIntegration\Person\Entity;
-use SocialSignIn\ExampleCrmIntegration\Person\RepositoryInterface;
+use SocialSignIn\ClientSuccessIntegration\Controller\IFrameController;
+use SocialSignIn\ClientSuccessIntegration\Person\Entity;
+use SocialSignIn\ClientSuccessIntegration\Person\RepositoryInterface;
 
 /**
- * @covers \SocialSignIn\ExampleCrmIntegration\Controller\IFrameController
+ * @covers \SocialSignIn\ClientSuccessIntegration\Controller\IFrameController
  */
 class IFrameControllerTest extends \PHPUnit_Framework_TestCase
 {
@@ -35,7 +35,7 @@ class IFrameControllerTest extends \PHPUnit_Framework_TestCase
     {
         $this->twig = m::mock(\Twig_Environment::class);
         $this->repository = m::mock(RepositoryInterface::class);
-        $this->controller = new IFrameController($this->twig, $this->repository);
+        $this->controller = new IFrameController($this->twig, $this->repository, 'secret');
     }
 
     public function tearDown()
@@ -45,15 +45,25 @@ class IFrameControllerTest extends \PHPUnit_Framework_TestCase
 
     public function testItCanReturnHtml()
     {
+        $person = new Entity('1', 'John');
         $this->repository->shouldReceive('get')
             ->withArgs(['1'])
             ->once()
-            ->andReturn($person = new Entity('1', 'John'));
+            ->andReturn($person);
 
         $this->twig->shouldReceive('render')
             ->once()
-            ->withArgs(['i-frame.twig', ['person' => $person]])
-            ->andReturn('<html></html>');
+            ->withArgs(function () {
+                $args = func_get_args();
+                $template_name = $args[0];
+                $this->assertNotEmpty($template_name);
+                $data = $args[1];
+                $this->assertNotEmpty($data);
+                $this->assertEquals('John', $data['person']->getName());
+
+                return true;
+                // ['i-frame.twig', ['person' => $person]])
+            })->andReturn('<html></html>');
 
         $request = Request::createFromEnvironment(
             Environment::mock([

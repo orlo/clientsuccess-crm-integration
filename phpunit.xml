@@ -4,7 +4,10 @@
         bootstrap="./vendor/autoload.php">
 
     <php>
-        <env name="SSI_SHARED_SECRET" value="super-secret" />
+        <env name="SHARED_SECRET" value="super-secret" />
+        <env name="CS_USERNAME" value="someusername" />
+        <env name="CS_PASSWORD" value="somepassword" />
+
     </php>
 
     <testsuites>

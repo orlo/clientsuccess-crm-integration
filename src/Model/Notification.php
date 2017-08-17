@@ -1,6 +1,6 @@
 <?php
 
-namespace SocialSignIn\ExampleCrmIntegration\Model;
+namespace SocialSignIn\ClientSuccessIntegration\Model;
 
 use Ramsey\Uuid\Uuid;
 

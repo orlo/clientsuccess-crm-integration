@@ -3,9 +3,24 @@
 use Assert\Assertion;
 use Psr\Container\ContainerInterface;
 use Slim\App;
-use SocialSignIn\ExampleCrmIntegration\Authentication\SignatureAuthentication;
+use SocialSignIn\ClientSuccessIntegration\Authentication\SignatureAuthentication;
 
 Assertion::isInstanceOf($app, App::class);
 Assertion::isInstanceOf($container, ContainerInterface::class);
 
-$app->add(new SignatureAuthentication($container->get('shared_secret'), ['POST' => '/webhook']));
+$signatureCheck = new SignatureAuthentication($container->get('shared_secret'), ['POST' => '/webhook']);
+
+$signatureCheck->restrictParametersToThese([
+        'message_social_network_type',
+        'message_social_network_id',
+        'message_author_social_network_id',
+        'message_sentiment',
+        'message_language_code',
+        'message_socialsignin_id',
+        'message_socialsignin_url',
+        'message_author_socialsignin_id',
+    ]
+);
+
+
+$app->add($signatureCheck);

@@ -1,6 +1,6 @@
 <?php
 
-namespace SocialSignIn\Test\ExampleCrmIntegration;
+namespace SocialSignIn\Test\ClientSuccessIntegration;
 
 use Slim\App;
 use Slim\Route;

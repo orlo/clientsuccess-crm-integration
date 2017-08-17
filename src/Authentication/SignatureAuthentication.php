@@ -1,6 +1,6 @@
 <?php
 
-namespace SocialSignIn\ExampleCrmIntegration\Authentication;
+namespace SocialSignIn\ClientSuccessIntegration\Authentication;
 
 use Slim\Http\Request;
 use Slim\Http\Response;
@@ -18,6 +18,8 @@ final class SignatureAuthentication
      */
     private $sharedSecret;
 
+    private $restrictedParams = [];
+
     /**
      * @param string $sharedSecret
      *
@@ -31,16 +33,21 @@ final class SignatureAuthentication
 
         $this->sharedSecret = $sharedSecret;
         $this->passthrough = $passthrough;
-  }
+    }
+
+    public function restrictParametersToThese(array $list)
+    {
+        $this->restrictedParams = $list;
+    }
 
     public function __invoke(Request $request, Response $response, callable $next)
     {
         foreach ($this->passthrough as $method => $target) {
-          if ($method == $request->getMethod() && $target == $request->getRequestTarget()) {
-            return $next($request, $response);
-          }
+            if ($method == $request->getMethod() && $target == $request->getRequestTarget()) {
+                return $next($request, $response);
+            }
         }
-        
+
         $query = $request->getQueryParams();
 
         if (!isset($query['sig'])
@@ -49,24 +56,19 @@ final class SignatureAuthentication
             || !is_string($query['expires'])
             || !ctype_digit($query['expires'])
         ) {
-            return $response->withJson(['status' => 'error', 'error' => 'missing or invalid sig or expires params'], 400);
+            return $response->withJson(['status' => 'error', 'error' => 'missing or invalid sig or expires params'],
+                400);
         }
 
         $signature = $query['sig'];
         unset($query['sig']);
-        $allowedParams = [
-            'message_social_network_type',
-            'message_social_network_id',
-            'message_author_social_network_id',
-            'message_sentiment',
-            'message_language_code',
-            'message_socialsignin_id',
-            'message_socialsignin_url',
-            'message_author_socialsignin_id',
-            
-        ];
-        foreach($allowedParams as $param) {
-            unset($query[$param]);
+
+        if (!empty($this->restrictedParams)) {
+            foreach ($query as $key => $thing) {
+                if (!in_array($thing, $this->restrictedParams)) {
+                    unset($query[$key]);
+                }
+            }
         }
 
         $expected = hash_hmac('sha256', http_build_query($query), $this->sharedSecret);

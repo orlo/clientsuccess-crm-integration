@@ -1,11 +1,11 @@
 <?php
 
-namespace SocialSignIn\Test\ExampleCrmIntegration;
+namespace SocialSignIn\Test\ClientSuccessIntegration;
 
 use Slim\App;
-use SocialSignIn\ExampleCrmIntegration\Controller\IFrameController;
-use SocialSignIn\ExampleCrmIntegration\Controller\SearchController;
-use SocialSignIn\ExampleCrmIntegration\Person\RepositoryInterface;
+use SocialSignIn\ClientSuccessIntegration\Controller\IFrameController;
+use SocialSignIn\ClientSuccessIntegration\Controller\SearchController;
+use SocialSignIn\ClientSuccessIntegration\Person\RepositoryInterface;
 
 class ContainerSetupTest extends \PHPUnit_Framework_TestCase
 {
