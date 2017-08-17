@@ -15,8 +15,8 @@ RUN curl -so /usr/local/bin/composer https://getcomposer.org/composer.phar  && c
     && ln -sf /dev/stderr /var/log/apache2/error.log
 
 COPY ./provisioning/apache-host /etc/apache2/sites-enabled/default.conf
-COPY . /srv/example-crm-integration
-WORKDIR /srv/example-crm-integration
+COPY . /srv/site
+WORKDIR /srv/site
 RUN /usr/local/bin/composer -n install 
 
 CMD ["/usr/sbin/apache2ctl", "-D", "FOREGROUND"]
