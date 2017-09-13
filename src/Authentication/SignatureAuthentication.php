@@ -65,7 +65,7 @@ final class SignatureAuthentication
 
         if (!empty($this->restrictedParams)) {
             foreach ($query as $key => $thing) {
-                if (!in_array($thing, $this->restrictedParams)) {
+                if (in_array($thing, $this->restrictedParams)) {
                     unset($query[$key]);
                 }
             }
