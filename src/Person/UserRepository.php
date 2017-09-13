@@ -163,7 +163,7 @@ final class UserRepository implements RepositoryInterface
         $promises = [
             'contact'       => $this->clientRequestAsync('GET', "clients/" . $clientId . "/contacts/" . $contactId),
             'client'        => $this->clientRequestAsync('GET', "clients/" . $clientId),
-            // 'interactions'  => $this->clientRequestAsync('GET', "clients/" . $clientId . "/interactions"),
+            'interactions'  => $this->clientRequestAsync('GET', "clients/" . $clientId . "/interactions"),
             'todos'         => $this->clientRequestAsync('GET', "clients/" . $clientId . "/to-dos"),
             'subscriptions' => $this->clientRequestAsync('GET', "subscriptions", [
                 'query' => [
@@ -176,7 +176,7 @@ final class UserRepository implements RepositoryInterface
 
         $data = json_decode($results['contact']->getBody()->getContents());
         $data->client = json_decode($results['client']->getBody()->getContents());
-        $data->interactions = [];
+        $data->interactions = json_decode($results['interactions']->getBody()->getContents());
         $data->subscriptions = json_decode($results['subscriptions']->getBody()->getContents());
         $data->todos = json_decode($results['todos']->getBody()->getContents());
 
