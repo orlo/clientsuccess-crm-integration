@@ -94,7 +94,7 @@ final class UserRepository implements RepositoryInterface
 
         $this->login();
 
-        $clients = $this->clientRequest('GET', 'contracts/search', [
+        $clients = $this->clientRequest('GET', 'contacts/search', [
             'query' => [
                 'term' => $term
             ]
