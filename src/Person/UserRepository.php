@@ -4,6 +4,7 @@ namespace SocialSignIn\ClientSuccessIntegration\Person;
 
 use Assert\Assertion;
 use GuzzleHttp\Client;
+use GuzzleHttp\Promise;
 
 final class UserRepository implements RepositoryInterface
 {
@@ -29,15 +30,25 @@ final class UserRepository implements RepositoryInterface
         ]);
     }
 
-    private function clientRequest($method, $uri, $options = []) {
+    private function addHeaders($options) {
         if (!empty($this->token)) {
             $options['headers'] = [
                 'Authorization' => $this->token
             ];
         }
+        return $options;
+    }
+
+    private function clientRequest($method, $uri, $options = []) {
+        $options = $this->addHeaders($options);
         $response = $this->httpClient->request($method, $uri, $options)->getBody()->getContents();
         Assertion::isJsonString($response, "Request to client success failed (non-json returned; can't get token)");
         return json_decode($response);
+    }
+
+    private function clientRequestAsync($method, $uri, $options = []) {
+        $options = $this->addHeaders($options);
+        return $this->httpClient->requestAsync($method, $uri, $options);
     }
 
     protected function login()
@@ -149,25 +160,25 @@ final class UserRepository implements RepositoryInterface
         $clientId = explode(":", $id)[0];
         $contactId = explode(":", $id)[1];
 
-        $contacts = $this->clientRequest('GET', "clients/" . $clientId . "/contacts/" . $contactId);
+        $promises = [
+            'contact'       => $this->clientRequestAsync('GET', "clients/" . $clientId . "/contacts/" . $contactId),
+            'client'        => $this->clientRequestAsync('GET', "clients/" . $clientId),
+            'interactions'  => $this->clientRequestAsync('GET', "clients/" . $clientId . "/interactions"),
+            'todos'         => $this->clientRequestAsync('GET', "clients/" . $clientId . "/to-dos"),
+            'subscriptions' => $this->clientRequestAsync('GET', "subscriptions", [
+                'query' => [
+                    'clientId' => $clientId
+                ]
+            ])
+        ];
 
-        $clients = $this->clientRequest('GET', "clients/" . $clientId);
+        $results = Promise\unwrap($promises);
 
-        $interactions = $this->clientRequest('GET', "clients/" . $clientId . "/interactions");
-
-        $todos = $this->clientRequest('GET', "clients/" . $clientId . "/to-dos");
-
-        $subscriptions = $this->clientRequest('GET', "subscriptions", [
-            'query' => [
-                'clientId' => $clientId
-            ]
-        ]);
-
-        $data = $contacts;
-        $data->client = $clients;
-        $data->interactions = $interactions;
-        $data->subscriptions = $subscriptions;
-        $data->todos = $todos;
+        $data = json_decode($results['contact']->getBody()->getContents());
+        $data->client = json_decode($results['client']->getBody()->getContents());
+        $data->interactions = json_decode($results['interactions']->getBody()->getContents());
+        $data->subscriptions = json_decode($results['subscriptions']->getBody()->getContents());
+        $data->todos = json_decode($results['todos']->getBody()->getContents());
 
         return $data;
     }
