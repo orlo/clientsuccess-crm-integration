@@ -3,12 +3,13 @@
 namespace SocialSignIn\ClientSuccessIntegration\Person;
 
 use Assert\Assertion;
+use GuzzleHttp\Client;
 
 final class UserRepository implements RepositoryInterface
 {
     private $token;
 
-    private $api = "https://api.clientsuccess.com/v1";
+    private $api = "https://api.clientsuccess.com/v1/";
 
     private $username = "";
 
@@ -16,56 +17,53 @@ final class UserRepository implements RepositoryInterface
 
     private $employees = [];
 
+    private $httpClient;
+
     public function __construct($username, $password)
     {
         $this->username = $username;
         $this->password = $password;
 
+        $this->httpClient = new Client([
+            'base_uri' => $this->api
+        ]);
+    }
+
+    private function clientRequest($method, $uri, $options = []) {
+        if (!empty($this->token)) {
+            $options['headers'] = [
+                'Authorization' => $this->token
+            ];
+        }
+        $response = $this->httpClient->request($method, $uri, $options)->getBody()->getContents();
+        Assertion::isJsonString($response, "Request to client success failed (non-json returned; can't get token)");
+        return json_decode($response);
     }
 
     protected function login()
     {
-
         if (!empty($this->token)) {
             return;
         }
-        $ch = curl_init();
 
-        curl_setopt($ch, CURLOPT_URL, $this->api . "/auth");
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($ch, CURLOPT_HEADER, false);
-        curl_setopt($ch, CURLOPT_POST, true);
-        curl_setopt($ch, CURLOPT_POSTFIELDS, "username=" . $this->username . "&password=" . $this->password);
-        curl_setopt($ch, CURLOPT_HTTPHEADER, array(
-            "Content-Type: application/x-www-form-urlencoded"
-        ));
+        $data = $this->clientRequest("POST", "auth", [
+            "json" => [
+                "username" => $this->username,
+                "password" => $this->password
+            ]
+        ]);
 
-        $response = curl_exec($ch);
-        curl_close($ch);
-        Assertion::isJsonString($response, "Request to client success failed (non-json returned; can't get token)");
-
-        $data = json_decode($response);
         $this->token = $data->access_token;
-
-
-        $ch = curl_init();
-        curl_setopt($ch, CURLOPT_URL, $this->api . "/employees");
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($ch, CURLOPT_HEADER, false);
-
-        curl_setopt($ch, CURLOPT_HTTPHEADER, array(
-            "Authorization: " . $this->token,
-            "Content-Type: application/json"
-        ));
-
-        $response = curl_exec($ch);
-        curl_close($ch);
-        $this->employees = json_decode($response);
     }
 
     private function getCurrentEmployee($email)
     {
         $this->login();
+
+        if (empty($this->employees)) {
+            $this->employees = $this->clientRequest("GET", "employees");
+        }
+
         foreach ($this->employees as $employee) {
             if (strtolower($employee->email) == strtolower($email)) {
                 return $employee;
@@ -80,23 +78,16 @@ final class UserRepository implements RepositoryInterface
      *
      * @return Entity[]
      */
-    public function search($query)
+    public function search($term)
     {
 
         $this->login();
 
-        $ch = curl_init();
-
-        curl_setopt($ch, CURLOPT_URL, $this->api . "/contacts/search?term='" . $query . "'");
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($ch, CURLOPT_HEADER, false);
-        curl_setopt($ch, CURLOPT_HTTPHEADER, array(
-            "Authorization: " . $this->token,
-            "Content-Type: application/json"
-        ));
-
-        $clients = json_decode(curl_exec($ch));
-        curl_close($ch);
+        $clients = $this->clientRequest('GET', 'contracts/search', [
+            'query' => [
+                'term' => $term
+            ]
+        ]);
 
         $persons = [];
         foreach ($clients as $contact) {
@@ -114,25 +105,14 @@ final class UserRepository implements RepositoryInterface
 
         $clientId = explode(":", $id)[0];
 
-        $ch = curl_init();
-
-        curl_setopt($ch, CURLOPT_URL, $this->api . "/clients/$clientId/to-dos");
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($ch, CURLOPT_HEADER, false);
-        curl_setopt($ch, CURLOPT_POST, true);
-        curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode([
-            'name' => $name
-        ]));
-        curl_setopt($ch, CURLOPT_HTTPHEADER, array(
-            "Authorization: " . $this->token,
-            "Content-Type: application/json"
-        ));
-
-        $response = curl_exec($ch);
-        curl_close($ch);
+        $response = $this->clientRequest('POST', "clients/$clientId/to-dos", [
+            'json' => [
+                'name' => $name
+            ]
+        ]);
 
         var_dump($response);
-        die(); // @todo
+        exit; // @todo
     }
 
 
@@ -141,29 +121,16 @@ final class UserRepository implements RepositoryInterface
 
         $this->login();
 
-        $ch = curl_init();
-
-        curl_setopt($ch, CURLOPT_URL, $this->api . "/clients/$clientId/interactions");
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($ch, CURLOPT_HEADER, false);
-        curl_setopt($ch, CURLOPT_POST, true);
-        curl_setopt($ch, CURLOPT_HTTPHEADER, array(
-            "Content-Type: application/json",
-            "Authorization: " . $this->token
-        ));
-        $params = [
-            'createdByEmployeeId' => $this->getCurrentEmployee("")->id,
-            'interactionTypeId' => 1,
-            'subject' => $subject,
-            'clientId' => $clientId,
-            'contactID' => $contactID,
-            'note' => $note
-        ];
-
-        curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($params));
-
-        curl_exec($ch);
-        curl_close($ch);
+        $this->clientRequest('POST', "clients/$clientId/interactions", [
+            'json' => [
+                'createdByEmployeeId' => $this->getCurrentEmployee("")->id,
+                'interactionTypeId' => 1,
+                'subject' => $subject,
+                'clientId' => $clientId,
+                'contactID' => $contactID,
+                'note' => $note
+            ]
+        ]);
 
         return json_encode(['success' => true]);
 
@@ -182,79 +149,25 @@ final class UserRepository implements RepositoryInterface
         $clientId = explode(":", $id)[0];
         $contactId = explode(":", $id)[1];
 
-        $ch = curl_init();
+        $contacts = $this->clientRequest('GET', "clients/" . $clientId . "/contacts/" . $contactId);
 
-        curl_setopt($ch, CURLOPT_URL, $this->api . "/clients/" . $clientId . "/contacts/" . $contactId);
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($ch, CURLOPT_HEADER, false);
-        curl_setopt($ch, CURLOPT_HTTPHEADER, array(
-            "Content-Type: application/json",
-            "Accept: application/json",
-            "Authorization: " . $this->token
-        ));
+        $clients = $this->clientRequest('GET', "clients/" . $clientId);
 
-        $contactResponse = curl_exec($ch);
-        curl_close($ch);
+        $interactions = $this->clientRequest('GET', "clients/" . $clientId . "/interactions");
 
+        $todos = $this->clientRequest('GET', "clients/" . $clientId . "/to-dos");
 
-        $ch = curl_init();
+        $subscriptions = $this->clientRequest('GET', "subscriptions", [
+            'query' => [
+                'clientId' => $clientId
+            ]
+        ]);
 
-        curl_setopt($ch, CURLOPT_URL, $this->api . "/clients/" . $clientId);
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($ch, CURLOPT_HEADER, false);
-        curl_setopt($ch, CURLOPT_HTTPHEADER, array(
-            "Content-Type: application/json",
-            "Accept: application/json",
-            "Authorization: " . $this->token
-        ));
-
-        $clientResponse = curl_exec($ch);
-        curl_close($ch);
-
-        $ch = curl_init();
-
-        curl_setopt($ch, CURLOPT_URL, $this->api . "/clients/" . $clientId . "/interactions");
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($ch, CURLOPT_HEADER, false);
-        curl_setopt($ch, CURLOPT_HTTPHEADER, array(
-            "Content-Type: application/json",
-            "Accept: application/json",
-            "Authorization: " . $this->token
-        ));
-        $interactionResponse = curl_exec($ch);
-        curl_close($ch);
-
-        $ch = curl_init();
-
-        curl_setopt($ch, CURLOPT_URL, $this->api . "/clients/" . $clientId . "/to-dos");
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($ch, CURLOPT_HEADER, false);
-        curl_setopt($ch, CURLOPT_HTTPHEADER, array(
-            "Content-Type: application/json",
-            "Accept: application/json",
-            "Authorization: " . $this->token
-        ));
-        $todosResponse = curl_exec($ch);
-        curl_close($ch);
-
-        $ch = curl_init();
-
-        curl_setopt($ch, CURLOPT_URL, $this->api . "/subscriptions?clientId=" . $clientId);
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($ch, CURLOPT_HEADER, false);
-        curl_setopt($ch, CURLOPT_HTTPHEADER, array(
-            "Content-Type: application/json",
-            "Accept: application/json",
-            "Authorization: " . $this->token
-        ));
-        $subscriptionResponse = curl_exec($ch);
-        curl_close($ch);
-
-        $data = json_decode($contactResponse);
-        $data->client = json_decode($clientResponse);
-        $data->interactions = json_decode($interactionResponse);
-        $data->subscriptions = json_decode($subscriptionResponse);
-        $data->todos = json_decode($todosResponse);
+        $data = $contacts;
+        $data->client = $clients;
+        $data->interactions = $interactions;
+        $data->subscriptions = $subscriptions;
+        $data->todos = $todos;
 
         return $data;
     }
