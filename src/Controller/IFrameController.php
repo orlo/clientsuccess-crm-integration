@@ -46,6 +46,4 @@ final class IFrameController
 
         return $response;
     }
-
-
 }

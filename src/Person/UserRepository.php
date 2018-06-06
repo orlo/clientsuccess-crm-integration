@@ -30,7 +30,8 @@ final class UserRepository implements RepositoryInterface
         ]);
     }
 
-    private function addHeaders($options) {
+    private function addHeaders($options)
+    {
         if (!empty($this->token)) {
             $options['headers'] = [
                 'Authorization' => $this->token
@@ -39,14 +40,16 @@ final class UserRepository implements RepositoryInterface
         return $options;
     }
 
-    private function clientRequest($method, $uri, $options = []) {
+    private function clientRequest($method, $uri, $options = [])
+    {
         $options = $this->addHeaders($options);
         $response = $this->httpClient->request($method, $uri, $options)->getBody()->getContents();
         Assertion::isJsonString($response, "Request to client success failed (non-json returned; can't get token)");
         return json_decode($response);
     }
 
-    private function clientRequestAsync($method, $uri, $options = []) {
+    private function clientRequestAsync($method, $uri, $options = [])
+    {
         $options = $this->addHeaders($options);
         return $this->httpClient->requestAsync($method, $uri, $options);
     }
@@ -102,8 +105,10 @@ final class UserRepository implements RepositoryInterface
 
         $persons = [];
         foreach ($clients as $contact) {
-            $persons[] = new Entity($contact->clientId . ":" . $contact->id,
-                $contact->firstName . " " . $contact->lastName);
+            $persons[] = new Entity(
+                $contact->clientId . ":" . $contact->id,
+                $contact->firstName . " " . $contact->lastName
+            );
         }
 
         return $persons;
@@ -144,7 +149,6 @@ final class UserRepository implements RepositoryInterface
         ]);
 
         return json_encode(['success' => true]);
-
     }
 
     /**

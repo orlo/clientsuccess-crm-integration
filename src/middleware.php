@@ -19,8 +19,7 @@ $signatureCheck->restrictParametersToThese([
         'message_socialsignin_id',
         'message_socialsignin_url',
         'message_author_socialsignin_id',
-    ]
-);
+    ]);
 
 
 $app->add($signatureCheck);

@@ -56,8 +56,10 @@ final class SignatureAuthentication
             || !is_string($query['expires'])
             || !ctype_digit($query['expires'])
         ) {
-            return $response->withJson(['status' => 'error', 'error' => 'missing or invalid sig or expires params'],
-                400);
+            return $response->withJson(
+                ['status' => 'error', 'error' => 'missing or invalid sig or expires params'],
+                400
+            );
         }
 
         $signature = $query['sig'];

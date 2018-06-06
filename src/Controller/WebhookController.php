@@ -31,8 +31,11 @@ final class WebhookController
 
         if ($notification->isValid($shared_secret)) { // is it really from SocialSignIn ?
 
-            file_put_contents('/tmp/cs_log.txt', json_encode($notification->getPayload()) . PHP_EOL,
-                FILE_APPEND | LOCK_EX);
+            file_put_contents(
+                '/tmp/cs_log.txt',
+                json_encode($notification->getPayload()) . PHP_EOL,
+                FILE_APPEND | LOCK_EX
+            );
 
             return $response->withJson([
                 'verification-hash' => $notification->generateVerificationHash($shared_secret),
