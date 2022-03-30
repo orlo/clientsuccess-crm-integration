@@ -3,6 +3,14 @@
 use Assert\Assertion;
 use Slim\App;
 
+
+/* @var App $app */
+/* @var \Slim\Container $container */
+
+if (!isset($app) || !isset($container)) {
+    throw new \InvalidArgumentException("wrong context");
+}
+
 Assertion::isInstanceOf($app, App::class);
 
 $app->get('/search', 'search_controller')->setName('search');

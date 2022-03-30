@@ -92,14 +92,14 @@ final class UserRepository implements RepositoryInterface
      *
      * @return Entity[]
      */
-    public function search($term)
+    public function search($query)
     {
 
         $this->login();
 
         $clients = $this->clientRequest('GET', 'contacts/search', [
             'query' => [
-                'term' => $term
+                'term' => $query
             ]
         ]);
 
@@ -127,7 +127,7 @@ final class UserRepository implements RepositoryInterface
             ]
         ]);
 
-        var_dump($response);
+
         exit; // @todo
     }
 

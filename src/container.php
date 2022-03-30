@@ -9,6 +9,12 @@ use SocialSignIn\ClientSuccessIntegration\Controller\SearchController;
 use SocialSignIn\ClientSuccessIntegration\Controller\WebhookController;
 use SocialSignIn\ClientSuccessIntegration\Person\UserRepository;
 
+/* @var App $app */
+/* @var \Slim\Container $container */
+
+if(!isset($app) || !isset($container)) {
+    throw new \InvalidArgumentException("wrong context");
+}
 Assertion::isInstanceOf($app, App::class);
 Assertion::isInstanceOf($container, ContainerInterface::class);
 
