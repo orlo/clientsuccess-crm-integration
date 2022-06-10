@@ -12,7 +12,7 @@ use SocialSignIn\ClientSuccessIntegration\Person\UserRepository;
 /* @var App $app */
 /* @var \Slim\Container $container */
 
-if(!isset($app) || !isset($container)) {
+if (!isset($app) || !isset($container)) {
     throw new \InvalidArgumentException("wrong context");
 }
 Assertion::isInstanceOf($app, App::class);

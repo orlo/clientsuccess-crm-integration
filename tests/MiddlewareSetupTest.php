@@ -2,12 +2,13 @@
 
 namespace SocialSignIn\Test\ClientSuccessIntegration;
 
+use PHPUnit\Framework\TestCase;
 use Slim\App;
 
-class MiddlewareSetupTest extends \PHPUnit_Framework_TestCase
+class MiddlewareSetupTest extends TestCase
 {
 
-    public function testMiddleware()
+    public function testMiddleware(): void
     {
         $app = new App();
         $container = $app->getContainer();

@@ -3,11 +3,9 @@
 use Assert\Assertion;
 use Slim\App;
 
-
 /* @var App $app */
-/* @var \Slim\Container $container */
 
-if (!isset($app) || !isset($container)) {
+if (!isset($app)) {
     throw new \InvalidArgumentException("wrong context");
 }
 

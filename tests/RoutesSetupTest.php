@@ -2,14 +2,15 @@
 
 namespace SocialSignIn\Test\ClientSuccessIntegration;
 
+use PHPUnit\Framework\TestCase;
 use Slim\App;
 use Slim\Route;
 use Slim\Router;
 
-class RoutesSetupTest extends \PHPUnit_Framework_TestCase
+class RoutesSetupTest extends TestCase
 {
 
-    public function testRoutes()
+    public function testRoutes(): void
     {
         $app = new App();
 

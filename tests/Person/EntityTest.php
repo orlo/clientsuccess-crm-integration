@@ -2,12 +2,13 @@
 
 namespace SocialSignIn\Test\ClientSuccessIntegration\Person;
 
+use PHPUnit\Framework\TestCase;
 use SocialSignIn\ClientSuccessIntegration\Person\Entity;
 
 /**
  * @covers \SocialSignIn\ClientSuccessIntegration\Person\Entity
  */
-class EntityTest extends \PHPUnit_Framework_TestCase
+class EntityTest extends TestCase
 {
 
     public function testEntity()

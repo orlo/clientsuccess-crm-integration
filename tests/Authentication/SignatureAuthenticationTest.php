@@ -2,6 +2,7 @@
 
 namespace SocialSignIn\Test\ClientSuccessIntegration\Authentication;
 
+use PHPUnit\Framework\TestCase;
 use Slim\Http\Environment;
 use Slim\Http\Request;
 use Slim\Http\Response;
@@ -10,28 +11,26 @@ use SocialSignIn\ClientSuccessIntegration\Authentication\SignatureAuthentication
 /**
  * @covers \SocialSignIn\ClientSuccessIntegration\Authentication\SignatureAuthentication
  */
-class SignatureAuthenticationTest extends \PHPUnit_Framework_TestCase
+class SignatureAuthenticationTest extends TestCase
 {
 
     private $sharedSecret;
     private $middleware;
 
-    public function setUp()
+    public function setUp(): void
     {
         $this->sharedSecret = md5(random_bytes(32));
         $this->middleware = new SignatureAuthentication($this->sharedSecret);
     }
 
-    /**
-     * @expectedException \Exception
-     * @expectedExceptionMessage Expected $sharedSecret to be non-empty string.
-     */
-    public function testInvalidSharedSecret()
+    public function testInvalidSharedSecret(): void
     {
+        $this->expectExceptionMessage('Expected $sharedSecret to be non-empty string.');
+        $this->expectException(\Exception::class);
         new SignatureAuthentication(null);
     }
 
-    public function testMissingQueryParameters()
+    public function testMissingQueryParameters(): void
     {
         $request = Request::createFromEnvironment(
             Environment::mock([
@@ -46,7 +45,7 @@ class SignatureAuthenticationTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals(400, $response->getStatusCode());
     }
 
-    public function testInvalidSignature()
+    public function testInvalidSignature(): void
     {
         $request = Request::createFromEnvironment(
             Environment::mock([
@@ -61,7 +60,7 @@ class SignatureAuthenticationTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals(403, $response->getStatusCode());
     }
 
-    public function testExpired()
+    public function testExpired(): void
     {
         $request = Request::createFromEnvironment(
             Environment::mock([
@@ -76,7 +75,7 @@ class SignatureAuthenticationTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals(403, $response->getStatusCode());
     }
 
-    public function testSuccess()
+    public function testSuccess(): void
     {
         $request = Request::createFromEnvironment(
             Environment::mock([
@@ -95,7 +94,7 @@ class SignatureAuthenticationTest extends \PHPUnit_Framework_TestCase
     }
 
 
-    private function sign(array $params, $secret, $ttl = 3600)
+    private function sign(array $params, $secret, $ttl = 3600): string
     {
         $params['expires'] = time() + $ttl;
         $params['sig'] = hash_hmac('sha256', http_build_query($params), $secret);

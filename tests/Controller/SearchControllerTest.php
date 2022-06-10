@@ -3,6 +3,7 @@
 namespace SocialSignIn\Test\ClientSuccessIntegration\Controller;
 
 use Mockery as m;
+use PHPUnit\Framework\TestCase;
 use Slim\Http\Environment;
 use Slim\Http\Request;
 use Slim\Http\Response;
@@ -13,7 +14,7 @@ use SocialSignIn\ClientSuccessIntegration\Person\RepositoryInterface;
 /**
  * @covers \SocialSignIn\ClientSuccessIntegration\Controller\SearchController
  */
-class SearchControllerTest extends \PHPUnit_Framework_TestCase
+class SearchControllerTest extends TestCase
 {
 
     /**
@@ -26,18 +27,18 @@ class SearchControllerTest extends \PHPUnit_Framework_TestCase
      */
     private $repository;
 
-    public function setUp()
+    public function setUp(): void
     {
         $this->repository = m::mock(RepositoryInterface::class);
         $this->controller = new SearchController($this->repository);
     }
 
-    public function tearDown()
+    public function tearDown(): void
     {
         m::close();
     }
 
-    public function testBasic()
+    public function testBasic(): void
     {
         $this->repository->shouldReceive('search')
             ->withArgs(['john'])
@@ -62,7 +63,7 @@ class SearchControllerTest extends \PHPUnit_Framework_TestCase
         );
     }
 
-    public function testMissingQueryIsError()
+    public function testMissingQueryIsError(): void
     {
         $request = Request::createFromEnvironment(
             Environment::mock([
@@ -75,7 +76,7 @@ class SearchControllerTest extends \PHPUnit_Framework_TestCase
         /** @var Response $response */
 
         // no ?q=xxx
-        $this->setExpectedException(\InvalidArgumentException::class);
+        $this->expectException(\InvalidArgumentException::class);
         $response = call_user_func($this->controller, $request, $response);
     }
 }

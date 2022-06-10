@@ -3,6 +3,7 @@
 namespace SocialSignIn\Test\ClientSuccessIntegration\Controller;
 
 use Mockery as m;
+use PHPUnit\Framework\TestCase;
 use Slim\Http\Environment;
 use Slim\Http\Request;
 use Slim\Http\Response;
@@ -13,7 +14,7 @@ use SocialSignIn\ClientSuccessIntegration\Person\RepositoryInterface;
 /**
  * @covers \SocialSignIn\ClientSuccessIntegration\Controller\IFrameController
  */
-class IFrameControllerTest extends \PHPUnit_Framework_TestCase
+class IFrameControllerTest extends TestCase
 {
 
     /**
@@ -31,19 +32,19 @@ class IFrameControllerTest extends \PHPUnit_Framework_TestCase
      */
     private $repository;
 
-    public function setUp()
+    public function setUp(): void
     {
         $this->twig = m::mock(\Twig_Environment::class);
         $this->repository = m::mock(RepositoryInterface::class);
         $this->controller = new IFrameController($this->twig, $this->repository, 'secret');
     }
 
-    public function tearDown()
+    public function tearDown(): void
     {
         m::close();
     }
 
-    public function testItCanReturnHtml()
+    public function testItCanReturnHtml(): void
     {
         $person = new Entity('1', 'John');
         $this->repository->shouldReceive('get')
@@ -80,7 +81,7 @@ class IFrameControllerTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals('<html></html>', (string)$response->getBody());
     }
 
-    public function testMissingIdIsError()
+    public function testMissingIdIsError(): void
     {
         $request = Request::createFromEnvironment(
             Environment::mock([
@@ -96,7 +97,7 @@ class IFrameControllerTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals(400, $response->getStatusCode());
     }
 
-    public function testPersonNotFound()
+    public function testPersonNotFound(): void
     {
         $request = Request::createFromEnvironment(
             Environment::mock([

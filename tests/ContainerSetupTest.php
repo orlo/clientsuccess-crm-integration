@@ -2,15 +2,16 @@
 
 namespace SocialSignIn\Test\ClientSuccessIntegration;
 
+use PHPUnit\Framework\TestCase;
 use Slim\App;
 use SocialSignIn\ClientSuccessIntegration\Controller\IFrameController;
 use SocialSignIn\ClientSuccessIntegration\Controller\SearchController;
 use SocialSignIn\ClientSuccessIntegration\Person\RepositoryInterface;
 
-class ContainerSetupTest extends \PHPUnit_Framework_TestCase
+class ContainerSetupTest extends TestCase
 {
 
-    public function testContainer()
+    public function testContainer(): void
     {
         $app = new App();
         $container = $app->getContainer();

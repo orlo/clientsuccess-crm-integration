@@ -2,13 +2,14 @@
 
 namespace SocialSignIn\Test\ClientSuccessIntegration\Person;
 
+use PHPUnit\Framework\TestCase;
 use SocialSignIn\ClientSuccessIntegration\Person\Entity;
 use SocialSignIn\ClientSuccessIntegration\Person\MockRepository;
 
 /**
  * @covers \SocialSignIn\ClientSuccessIntegration\Person\MockRepository
  */
-class MockRepositoryTest extends \PHPUnit_Framework_TestCase
+class MockRepositoryTest extends TestCase
 {
 
     /**
@@ -16,12 +17,12 @@ class MockRepositoryTest extends \PHPUnit_Framework_TestCase
      */
     private $repository;
 
-    public function setUp()
+    public function setUp(): void
     {
         $this->repository = new MockRepository();
     }
 
-    public function testSearch()
+    public function testSearch(): void
     {
         $persons = $this->repository->search('jo');
         $this->assertCount(2, $persons);
@@ -29,7 +30,7 @@ class MockRepositoryTest extends \PHPUnit_Framework_TestCase
         $this->assertInstanceOf(Entity::class, $persons[1]);
     }
 
-    public function testGet()
+    public function testGet(): void
     {
         $person = $this->repository->get('1');
         $this->assertInstanceOf(Entity::class, $person);
