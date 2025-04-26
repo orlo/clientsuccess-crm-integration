@@ -13,7 +13,7 @@
     }
   },
   "require": {
-    "php": ">=7.2",
+    "php": "^8.0",
     "ext-json": "*",
     "slim/slim": "^3.8",
     "twig/twig": "^1.34",
