@@ -6,7 +6,7 @@ namespace SocialSignIn\ClientSuccessIntegration\Controller;
 use Slim\Http\Request;
 use Slim\Http\Response;
 use SocialSignIn\ClientSuccessIntegration\Person\RepositoryInterface;
-use Twig_Environment;
+use Twig\Environment;
 
 final class IFrameController
 {
@@ -15,7 +15,7 @@ final class IFrameController
     private $repository;
     private $sharedSecret;
 
-    public function __construct(Twig_Environment $twig, RepositoryInterface $repository, $sharedSecret)
+    public function __construct(Environment $twig, RepositoryInterface $repository, $sharedSecret)
     {
         $this->twig = $twig;
         $this->repository = $repository;

@@ -10,6 +10,7 @@ use Slim\Http\Response;
 use SocialSignIn\ClientSuccessIntegration\Controller\IFrameController;
 use SocialSignIn\ClientSuccessIntegration\Person\Entity;
 use SocialSignIn\ClientSuccessIntegration\Person\RepositoryInterface;
+use Twig\Environment as TwigEnvironment;
 
 /**
  * @covers \SocialSignIn\ClientSuccessIntegration\Controller\IFrameController
@@ -23,7 +24,7 @@ class IFrameControllerTest extends TestCase
     private $controller;
 
     /**
-     * @var \Twig_Environment|m\Mock
+     * @var TwigEnvironment|m\Mock
      */
     private $twig;
 
@@ -34,7 +35,7 @@ class IFrameControllerTest extends TestCase
 
     public function setUp(): void
     {
-        $this->twig = m::mock(\Twig_Environment::class);
+        $this->twig = m::mock(TwigEnvironment::class);
         $this->repository = m::mock(RepositoryInterface::class);
         $this->controller = new IFrameController($this->twig, $this->repository, 'secret');
     }

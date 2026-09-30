@@ -26,7 +26,7 @@ class ContainerSetupTest extends TestCase
 
         $this->assertTrue(is_string($container->get('shared_secret')));
         $this->assertInstanceOf(RepositoryInterface::class, $container->get('person_repository'));
-        $this->assertInstanceOf(\Twig_Environment::class, $container->get('twig'));
+        $this->assertInstanceOf(\Twig\Environment::class, $container->get('twig'));
         $this->assertInstanceOf(SearchController::class, $container->get('search_controller'));
         $this->assertInstanceOf(IFrameController::class, $container->get('i_frame_controller'));
     }

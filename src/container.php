@@ -8,6 +8,8 @@ use SocialSignIn\ClientSuccessIntegration\Controller\InteractionController;
 use SocialSignIn\ClientSuccessIntegration\Controller\SearchController;
 use SocialSignIn\ClientSuccessIntegration\Controller\WebhookController;
 use SocialSignIn\ClientSuccessIntegration\Person\UserRepository;
+use Twig\Environment;
+use Twig\Loader\FilesystemLoader;
 
 /* @var App $app */
 /* @var \Slim\Container $container */
@@ -48,8 +50,8 @@ $container['person_repository'] = function (ContainerInterface $c) {
 };
 
 $container['twig'] = function () {
-    $loader = new Twig_Loader_Filesystem(__DIR__ . '/../templates');
-    return new Twig_Environment($loader, []);
+    $loader = new FilesystemLoader(__DIR__ . '/../templates');
+    return new Environment($loader, []);
 };
 
 $container['search_controller'] = function (ContainerInterface $c) {
